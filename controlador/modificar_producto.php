@@ -5,9 +5,11 @@
             $id         = $_POST["id"];
             $nombre     = $_POST["nombre"];
             $categoria  = $_POST["categoria"];
-            $precio     = $_POST["precio"];
+            $precio = str_replace([',', '.'], ['', ''], $_POST["precio"]);
 
             $sql        = $conexion->query("UPDATE product SET name ='$nombre', category =$categoria, price =$precio WHERE id =$id");
+            
+
             if ($sql == 1) { // Check if query executed successfully
                 header("location: index.php");
             } else {
@@ -16,7 +18,5 @@
         } else {
             echo '<div class="alert alert-warning"> Alguno de los campos está vacío</div>'; 
         }
-    } else {
-        echo '<div class="alert alert-warning"> Problemas al detectar el botón MODIFICAR</div>'; 
     }
 ?>
