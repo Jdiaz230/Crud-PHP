@@ -1,0 +1,89 @@
+Primera Consulta:
+En esta consulta trae el registro del primer prestamo reportado sin fecha de devolucion
+SELECT 
+    libro.titulo AS 'Título del Libro',
+    libro.autor AS 'Autor del Libro',
+    usuario.nombre AS 'Nombre del Usuario',
+    usuario.apellido AS 'Apellido del Usuario',
+    prestamo.fecha_prestamo AS 'Fecha de Préstamo',
+    prestamo.fecha_devolucion AS 'Fecha de Devolución'
+FROM 
+    prestamo
+JOIN 
+    libro ON prestamo.id = libro.ID
+JOIN 
+    usuario ON prestamo.id = usuario.ID;
+
+-En esta consutla me traigo las ultimas fechas de los libros prestados con la fecha de devolucion reportada
+
+SELECT 
+    libro.titulo AS 'Título del Libro',
+    libro.autor AS 'Autor del Libro',
+    usuario.nombre AS 'Nombre del Usuario',
+    usuario.apellido AS 'Apellido del Usuario',
+    prestamo.fecha_prestamo AS 'Fecha de Préstamo',
+    prestamo.fecha_devolucion AS 'Fecha de Devolución',
+    LastLoan.LastFechaPrestamo AS 'Última Fecha de Préstamo'
+FROM 
+    prestamo
+JOIN 
+    libro ON prestamo.libro_id = libro.ID
+JOIN 
+    usuario ON prestamo.usuario_id = usuario.ID
+JOIN 
+    (SELECT 
+        libro_id,
+        MAX(fecha_prestamo) AS LastFechaPrestamo
+    FROM 
+        prestamo
+    GROUP BY 
+        libro_id) AS LastLoan ON prestamo.libro_id = LastLoan.libro_id
+      WHERE
+    prestamo.fecha_prestamo = LastLoan.LastFechaPrestamo;
+
+- Como ultima consulta tambien  traigo la misma anterior pero teniendo en cuenta la devolucion en null
+
+SELECT 
+    libro.titulo AS 'Título del Libro',
+    libro.autor AS 'Autor del Libro',
+    usuario.nombre AS 'Nombre del Usuario',
+    usuario.apellido AS 'Apellido del Usuario',
+    LastLoan.LastFechaPrestamo AS 'Última Fecha de Préstamo',
+    prestamo.fecha_devolucion AS 'Fecha de Devolución'
+   
+FROM 
+    prestamo
+JOIN 
+    libro ON prestamo.libro_id = libro.ID
+JOIN 
+    usuario ON prestamo.usuario_id = usuario.ID
+JOIN 
+    (SELECT 
+        libro_id,
+        MAX(fecha_prestamo) AS LastFechaPrestamo
+    FROM 
+        prestamo
+    GROUP BY 
+        libro_id) AS LastLoan ON prestamo.libro_id = LastLoan.libro_id
+    WHERE
+   	prestamo.fecha_prestamo = LastLoan.LastFechaPrestamo
+    AND prestamo.fecha_devolucion IS NULL;
+
+Segunda consulta:
+SELECT 
+ 	libro.titulo AS 'Título del Libro',
+    libro.autor AS 'Autor del Libro',
+    usuario.nombre AS 'Nombre del Usuario',
+    usuario.apellido AS 'Apellido del Usuario',
+    prestamo.fecha_prestamo AS 'Fecha de Préstamo'
+   
+FROM 
+   prestamo
+JOIN 
+    libro ON prestamo.id = libro.ID
+JOIN 
+    usuario ON prestamo.usuario_id = usuario.id
+WHERE 
+    prestamo.fecha_prestamo < DATE_SUB(CURDATE(), INTERVAL 7 DAY)
+AND 
+    prestamo.fecha_devolucion IS NULL;
